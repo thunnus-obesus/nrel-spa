@@ -53,5 +53,45 @@ TEST(SpaTest, ComprehensiveAlgorithmVerification) {
   EXPECT_NEAR(output.sun_transit, 11.768, 0.01);
 }
 
+TEST(SpaTest, SunriseSunsetVerificationTableA21) {
+  // NREL Table A2.1 "The AA and SPA Results for Sunrise and Sunset at Greenwich Meridian at 0-UT"
+  SpaInput input = {};
+  input.longitude = 0.0;
+  input.timezone = 0.0;
+  input.elevation = 0.0;
+  input.pressure = 1013.25;
+  input.temperature = 11.0;
+  input.slope = 0.0;
+  input.azm_rotation = 0.0;
+  input.atmos_refract = 0.5667;
+
+  // Case 1: January 2, 1994 (Lat 35)
+  input.year = 1994; input.month = 1; input.day = 2;
+  input.latitude = 35.0;
+  input.delta_t = 60.0;
+  SpaOutput out1 = SolarPositionCalculator::Calculate(input);
+  // Expected: Sunrise 7:08:12.8 (7.136889 hrs), Sunset 16:59:55.9 (16.998861 hrs)
+  EXPECT_NEAR(out1.sunrise, 7.136889, 0.001);
+  EXPECT_NEAR(out1.sunset, 16.998861, 0.001);
+
+  // Case 2: July 5, 1996 (Lat -35)
+  input.year = 1996; input.month = 7; input.day = 5;
+  input.latitude = -35.0;
+  input.delta_t = 62.0;
+  SpaOutput out2 = SolarPositionCalculator::Calculate(input);
+  // Expected: Sunrise 7:08:15.4 (7.137611 hrs), Sunset 17:01:04.5 (17.017917 hrs)
+  EXPECT_NEAR(out2.sunrise, 7.137611, 0.001);
+  EXPECT_NEAR(out2.sunset, 17.017917, 0.001);
+
+  // Case 3: December 4, 2004 (Lat -35)
+  input.year = 2004; input.month = 12; input.day = 4;
+  input.latitude = -35.0;
+  input.delta_t = 64.0;
+  SpaOutput out3 = SolarPositionCalculator::Calculate(input);
+  // Expected: Sunrise 4:38:57.1 (4.649194 hrs), Sunset 19:02:02.5 (19.034028 hrs)
+  EXPECT_NEAR(out3.sunrise, 4.649194, 0.001);
+  EXPECT_NEAR(out3.sunset, 19.034028, 0.001);
+}
+
 } // namespace
 } // namespace nrel_spa
