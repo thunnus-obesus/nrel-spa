@@ -1,2 +1,6 @@
 build/
 .cache/
+*.pdf
+# Reference files
+spa_ref.c
+spa_ref.h
