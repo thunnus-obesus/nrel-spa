@@ -6,27 +6,51 @@ namespace nrel_spa {
 namespace {
 
 TEST(SpaTest, JulianDayVerification) {
+  // NREL Table A4.1: Examples for Testing any Program to Calculate the Julian
+  // Day
   SpaInput input = {};
   input.timezone = 0;
 
-  // Case 1: -4712-01-01 12:00:00 (JD 0.0)
-  input.year = -4712;
-  input.month = 1;
-  input.day = 1;
-  input.hour = 12;
-  input.minute = 0;
-  input.second = 0;
-  EXPECT_NEAR(SolarPositionCalculator::Calculate(input).julian_day, 0.0, 1e-6);
+  struct TestCase {
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    double second;
+    double expected_jd;
+  };
 
-  // Case 15: 2003-10-17 12:30:30 (JD 2452930.021181)
-  input.year = 2003;
-  input.month = 10;
-  input.day = 17;
-  input.hour = 12;
-  input.minute = 30;
-  input.second = 30;
-  EXPECT_NEAR(SolarPositionCalculator::Calculate(input).julian_day,
-              2452930.021181, 1e-6);
+  TestCase cases[] = {
+      {2000, 1, 1, 12, 0, 0, 2451545.0},
+      {1600, 12, 31, 0, 0, 0, 2305812.5},
+      {1999, 1, 1, 0, 0, 0, 2451179.5},
+      {837, 4, 10, 7, 12, 0, 2026871.8},
+      {1987, 1, 27, 0, 0, 0, 2446822.5},
+      {-123, 12, 31, 0, 0, 0, 1676496.5},
+      {1987, 6, 19, 12, 0, 0, 2446966.0},
+      {-122, 1, 1, 0, 0, 0, 1676497.5},
+      {1988, 1, 27, 0, 0, 0, 2447187.5},
+      {-1000, 7, 12, 12, 0, 0, 1356001.0},
+      {1988, 6, 19, 12, 0, 0, 2447332.0},
+      {-1000, 2, 29, 0, 0, 0, 1355866.5},
+      {1900, 1, 1, 0, 0, 0, 2415020.5},
+      {-1001, 8, 17, 21, 36, 0, 1355671.4},
+      {1600, 1, 1, 0, 0, 0, 2305447.5},
+      {-4712, 1, 1, 12, 0, 0, 0.0},
+  };
+
+  for (const auto& tc : cases) {
+    input.year = tc.year;
+    input.month = tc.month;
+    input.day = tc.day;
+    input.hour = tc.hour;
+    input.minute = tc.minute;
+    input.second = tc.second;
+    EXPECT_NEAR(SolarPositionCalculator::Calculate(input).julian_day,
+                tc.expected_jd, 1e-6)
+        << "Failed for Date: " << tc.year << "-" << tc.month << "-" << tc.day;
+  }
 }
 
 TEST(SpaTest, ComprehensiveAlgorithmVerification) {
